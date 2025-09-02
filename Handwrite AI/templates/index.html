@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MNIST Digit Predictor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h2>Upload Digit Image</h2>
+    <input type="file" id="fileInput" />
+    <button onclick="predict()">Predict</button>
+    <h3 id="result"></h3>
+  </div>
+
+  <script>
+    async function predict() {
+      const fileInput = document.getElementById("fileInput");
+      if (fileInput.files.length === 0) {
+        alert("Please upload a file first!");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (result.prediction !== undefined) {
+        document.getElementById("result").innerText =
+          "Predicted Number: " + result.prediction;
+      } else {
+        document.getElementById("result").innerText =
+          "Error: " + result.error;
+      }
+    }
+  </script>
+</body>
+</html>
